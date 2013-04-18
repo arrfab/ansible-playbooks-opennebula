@@ -1,0 +1,13 @@
+---
+
+- name: Configuring OneAdmin ssh
+  copy: src=../files/opennebula/ssh_config dest=/var/lib/one/.ssh/config mode=0600 owner=oneadmin group=oneadmin setype=ssh_home_t
+  tags: 
+    - now
+
+- name: Configuring correct selinux context for one ssh access
+  file: path=/var/lib/one/.ssh state=directory setype=ssh_home_t recurse=yes owner=oneadmin group=oneadmin
+  when_string: ${ansible_selinux.config_mode} == 'enforcing'
+  
+  tags:
+    - now    

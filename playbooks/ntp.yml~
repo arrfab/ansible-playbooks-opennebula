@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: Verify that ntpd is installed and running/configured
+      action: yum name=ntp state=installed
+    - action: service name=ntpd state=stated enabled=yes  

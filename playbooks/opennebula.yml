@@ -1,0 +1,35 @@
+---
+################################################################
+#
+# First play is to initialize server
+#
+#
+################################################################
+
+- hosts: neon.home.arrfab.net
+  user: root
+  tasks:
+    - include: ../tasks/opennebula-server.yml
+    - include: ../tasks/opennebula-oneadmin-user.yml
+    
+  handlers:
+    - include: ../handlers/opennebula.yml  
+
+################################################################
+#
+# second play on each managed host
+#
+#
+################################################################    
+
+- hosts: neon.home.arrfab.net
+  user: root
+  vars:
+    - opennebula_host_hypervisor: kvm
+  tasks:
+    - include: ../tasks/opennebula-host.yml
+    - include: ../tasks/opennebula-oneadmin-user.yml
+  
+  handlers:
+    - include: ../handlers/opennebula.yml    
+    

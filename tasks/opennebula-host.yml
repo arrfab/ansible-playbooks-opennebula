@@ -1,0 +1,28 @@
+---
+- name: Ensuring some required packages installed
+  yum: name=$item state=installed
+  with_items:
+    - libvirt
+    - dbus
+    
+- name: Ensuring required services are started and enabled
+  service: name=$item state=started enabled=yes
+  with_items:
+    - libvirtd
+    - messagebus
+
+- name: Ensuring libvirt is configured for the oneadmin user
+  template: src=../templates/etc/qemu.conf.j2 dest=/etc/libvirt/qemu.conf
+  notify: restart_libvirt
+    
+- name: Fetching repository file
+  get_url: url=https://nazar.karan.org/results/opennebula/_opennebula.repo dest=/etc/yum.repos.d/opennebula.repo
+
+- name: Installing OpenNebula host package
+  yum: name=$item state=installed
+  with_items:
+    - opennebula-node-${opennebula_host_hypervisor}
+
+- name: Configuring correct selinux context qemu/libvirt
+  file: path=/var/lib/one/datastores state=directory setype=virt_image_t recurse=yes owner=oneadmin group=oneadmin
+  when_string: ${ansible_selinux.config_mode} == 'enforcing'

@@ -1,0 +1,17 @@
+---
+      
+- name: Fetching repository file
+  get_url: url=https://nazar.karan.org/results/opennebula/_opennebula.repo dest=/etc/yum.repos.d/opennebula.repo
+
+- name: Installing OpenNebula server packages  
+  yum: name=$item state=installed
+  with_items:
+    - opennebula-server
+    - opennebula-sunstone
+    
+- name: Ensure OpenNebula services are started
+  service: name=$item state=started enabled=yes
+  with_items:
+    - opennebula
+    - opennebula-sunstone
+    - opennebula-occi
